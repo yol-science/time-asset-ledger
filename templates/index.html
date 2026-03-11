@@ -1,66 +1,91 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>時間資産簿 - Time is Money</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+    <div class="container">
+        <header class="header">
+            <h1>Timeis Money</h1>
+            <p class="subtitle">時間資産簿</p>
+        </header>
 
-    <h1>時間資産簿</h1>
+        <section class="summary-grid">
+            <div class="card highlight">
+                <h2>現在の時給</h2>
+                <p class="value">¥ {{ "{:,}".format(hourly_rate) }}</p>
+            </div>
 
-    <h2>現在の時給</h2>
-    <h3>¥ {{ "{:,}".format(hourly_rate) }}</h3>
+            <div class="card">
+                <h2>今月の浪費時間</h2>
+                <p class="value">{{ month_minutes }} 分</p>
+            </div>
 
-    <h2>今月の浪費時間</h2>
-    <h3>{{ month_minutes }} 分</h3>
+            <div class="card">
+                <h2>今月の浪費金額</h2>
+                <p class="value">¥ {{ "{:,}".format(monthly_loss) }}</p>
+            </div>
 
-    <h2>今月の浪費金額</h2>
-    <h3>¥ {{ "{:,}".format(monthly_loss) }}</h3>
+            <div class="card">
+                <h2>今年の浪費時間</h2>
+                <p class="value">{{ year_minutes }} 分</p>
+            </div>
 
-    <h2>今年の浪費時間</h2>
-    <h3>{{ year_minutes }} 分</h3>
+            <div class="card">
+                <h2>今年の浪費金額</h2>
+                <p class="value">¥ {{ "{:,}".format(yearly_loss) }}</p>
+            </div>
+        </section>
 
-    <h2>今年の浪費金額</h2>
-    <h3>¥ {{ "{:,}".format(yearly_loss) }}</h3>
+        <section class="form-section">
+            <div class="form-card">
+                <h3>時給を設定</h3>
+                <form method="POST" class="form-box">
+                    <input type="hidden" name="action" value="save_rate">
+                    <input type="number" name="hourly_rate" min="0" required placeholder="時給を入力">
+                    <button type="submit">保存</button>
+                </form>
+            </div>
 
-    <hr>
+            <div class="form-card">
+                <h3>浪費時間を記録</h3>
+                <form method="POST" class="form-box">
+                    <input type="hidden" name="action" value="add_log">
+                    <input type="number" name="minutes" min="1" required placeholder="分数を入力">
+                    <button type="submit">追加</button>
+                </form>
+            </div>
+        </section>
 
-    <h3>時給を設定</h3>
-    <form method="POST">
-        <input type="hidden" name="action" value="save_rate">
-        <input type="number" name="hourly_rate" min="0" required>
-        <button type="submit">保存</button>
-    </form>
+        <section class="logs-section">
+            <div class="logs-card">
+                <h3>記録一覧</h3>
 
-    <hr>
+                {% if logs %}
+                    <ul class="log-list">
+                        {% for log in logs %}
+                            <li class="log-item">
+                                <div class="log-info">
+                                    <span class="log-time">{{ log["created_at"] }}</span>
+                                    <span class="log-minutes">{{ log["minutes"] }} 分</span>
+                                </div>
 
-    <h3>浪費時間を記録</h3>
-    <form method="POST">
-        <input type="hidden" name="action" value="add_log">
-        <input type="number" name="minutes" min="1" required>
-        <button type="submit">追加</button>
-    </form>
-
-    <hr>
-
-    <h3>記録一覧</h3>
-
-    {% if logs %}
-        <ul>
-            {% for log in logs %}
-                <li>
-                    {{ log["created_at"] }} - {{ log["minutes"] }} 分
-                    <form method="POST" style="display:inline;">
-                        <input type="hidden" name="action" value="delete_log">
-                        <input type="hidden" name="log_id" value="{{ log['id'] }}">
-                        <button type="submit">削除</button>
-                    </form>
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>まだ記録がありません。</p>
-    {% endif %}
-
+                                <form method="POST">
+                                    <input type="hidden" name="action" value="delete_log">
+                                    <input type="hidden" name="log_id" value="{{ log['id'] }}">
+                                    <button type="submit" class="delete-btn">削除</button>
+                                </form>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="empty-message">まだ記録がありません。</p>
+                {% endif %}
+            </div>
+        </section>
+    </div>
 </body>
 </html>
