@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
     <title>時間資産簿 - Time is Money</title>
 </head>
 <body>
@@ -8,24 +9,31 @@
     <h1>時間資産簿</h1>
 
     <h2>現在の時給</h2>
-    <h3>¥ {{ hourly_rate }}</h3>
+    <h3>¥ {{ "{:,}".format(hourly_rate) }}</h3>
+
+    <h2>今日の浪費時間</h2>
+    <h3>{{ today_minutes }} 分</h3>
+
+    <h2>今日の浪費金額</h2>
+    <h3>¥ {{ "{:,}".format(today_loss) }}</h3>
 
     <h2>今月の浪費時間</h2>
     <h3>{{ month_minutes }} 分</h3>
 
     <h2>今月の浪費金額</h2>
-    <h3>¥ {{ monthly_loss }}</h3>
+    <h3>¥ {{ "{:,}".format(monthly_loss) }}</h3>
 
     <h2>今年の浪費時間</h2>
     <h3>{{ year_minutes }} 分</h3>
 
     <h2>今年の浪費金額</h2>
-    <h3>¥ {{ yearly_loss }}</h3>
+    <h3>¥ {{ "{:,}".format(yearly_loss) }}</h3>
 
     <hr>
 
     <h3>時給を設定</h3>
     <form method="POST">
+        <input type="hidden" name="action" value="save_rate">
         <input type="number" name="hourly_rate" min="0" required>
         <button type="submit">保存</button>
     </form>
@@ -34,9 +42,21 @@
 
     <h3>浪費時間を記録</h3>
     <form method="POST">
+        <input type="hidden" name="action" value="add_log">
         <input type="number" name="minutes" min="1" required>
         <button type="submit">追加</button>
     </form>
+
+    <hr>
+
+    <h3>最近の記録</h3>
+    <ul>
+        {% for log in recent_logs %}
+            <li>{{ log["created_at"] }} - {{ log["minutes"] }} 分</li>
+        {% else %}
+            <li>まだ記録がありません</li>
+        {% endfor %}
+    </ul>
 
 </body>
 </html>
