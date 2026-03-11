@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>時間資産簿 - Time is Money</title>
+</head>
+<body>
+
+    <h1>時間資産簿</h1>
+
+    <h2>現在の時給</h2>
+    <h3>¥ {{ hourly_rate }}</h3>
+
+    <h2>今月の浪費時間</h2>
+    <h3>{{ month_minutes }} 分</h3>
+
+    <h2>今月の浪費金額</h2>
+    <h3>¥ {{ monthly_loss }}</h3>
+
+    <h2>今年の浪費時間</h2>
+    <h3>{{ year_minutes }} 分</h3>
+
+    <h2>今年の浪費金額</h2>
+    <h3>¥ {{ yearly_loss }}</h3>
+
+    <hr>
+
+    <h3>時給を設定</h3>
+    <form method="POST">
+        <input type="number" name="hourly_rate" min="0" required>
+        <button type="submit">保存</button>
+    </form>
+
+    <hr>
+
+    <h3>浪費時間を記録</h3>
+    <form method="POST">
+        <input type="number" name="minutes" min="1" required>
+        <button type="submit">追加</button>
+    </form>
+
+</body>
+</html>
