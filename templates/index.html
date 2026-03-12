@@ -15,10 +15,16 @@
         </header>
 
         <section class="hero-loss">
-            <div class="hero-card">
+            <div class="hero-card main-hero">
                 <p class="hero-label">今月の損失金額</p>
                 <p class="hero-value">¥ {{ "{:,}".format(monthly_loss) }}</p>
                 <p class="hero-sub">{{ month_minutes }} 分の浪費</p>
+            </div>
+
+            <div class="today-card">
+                <p class="today-label">今日の損失</p>
+                <p class="today-value">¥ {{ "{:,}".format(today_loss) }}</p>
+                <p class="today-sub">{{ today_minutes }} 分</p>
             </div>
         </section>
 

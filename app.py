@@ -72,8 +72,18 @@ def home():
     hourly_rate = setting["hourly_rate"] if setting else 0
 
     now = datetime.now()
+    today = now.strftime("%Y-%m-%d")
     current_month = now.strftime("%Y-%m")
     current_year = now.strftime("%Y")
+
+    cursor.execute("""
+    SELECT SUM(minutes) AS today_minutes
+    FROM logs
+    WHERE strftime('%Y-%m-%d', created_at) = ?
+    """, (today,))
+    today_result = cursor.fetchone()
+    today_minutes = today_result["today_minutes"] if today_result["today_minutes"] else 0
+
 
     cursor.execute("""
     SELECT SUM(minutes) AS month_minutes
@@ -101,6 +111,7 @@ def home():
     """)
     logs = cursor.fetchall()
 
+    today_loss = int(hourly_rate * today_minutes / 60)
     monthly_loss = int(hourly_rate * month_minutes / 60)
     yearly_loss = int(hourly_rate * year_minutes / 60)
 
@@ -113,7 +124,9 @@ def home():
         year_minutes=year_minutes,
         monthly_loss=monthly_loss,
         yearly_loss=yearly_loss,
-        logs=logs
+        logs=logs,
+        today_minutes=today_minutes,
+        today_loss=today_loss
     )
 
 

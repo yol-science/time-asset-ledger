@@ -44,6 +44,48 @@ body {
     margin-bottom: 34px;
 }
 
+.hero-loss {
+    margin-bottom: 36px;
+}
+
+.main-hero {
+    text-align: center;
+    padding: 46px 24px;
+}
+
+.hero-value {
+    font-size: 3.6rem;
+    font-weight: 800;
+}
+
+.today-card {
+    margin-top: 18px;
+    background: rgba(20,20,20,0.95);
+    border: 1px solid rgba(212,175,55,0.35);
+    border-radius: 16px;
+    padding: 22px;
+    text-align: center;
+    box-shadow: 0 0 14px rgba(212,175,55,0.08);
+}
+
+.today-label {
+    color: #d4af37;
+    font-size: 0.9rem;
+    letter-spacing: 0.1em;
+}
+
+.today-value {
+    font-size: 1.9rem;
+    font-weight: bold;
+    color: #fff4cc;
+    margin: 6px 0;
+}
+
+.today-sub {
+    color: #c8b47a;
+    font-size: 0.9rem;
+}
+
 .hero-card {
     text-align: center;
     padding: 42px 24px;
@@ -259,6 +301,10 @@ button:active {
 
 /* Responsive */
 @media (max-width: 960px) {
+    .hero-grid {
+        grid-template-columns: 1fr;
+    }
+
     .summary-grid {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -307,4 +353,31 @@ button:active {
     .delete-btn {
         width: 100%;
     }
+}
+
+.hero-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 18px;
+}
+
+.main-hero {
+    text-align: center;
+    padding: 42px 24px;
+}
+
+.side-hero {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 32px 24px;
+    text-align: center;
+}
+
+.hero-side-value {
+    margin: 10px 0;
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #fff6da;
+    line-height: 1.1;
 }
