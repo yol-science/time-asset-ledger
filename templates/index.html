@@ -8,10 +8,19 @@
 </head>
 <body>
     <div class="container">
+
         <header class="header">
-            <h1>Timeis Money</h1>
-            <p class="subtitle">時間資産簿</p>
+            <h1>時間資産簿</h1>
+            <p class="subtitle">Time is Money</p>
         </header>
+
+        <section class="hero-loss">
+            <div class="hero-card">
+                <p class="hero-label">今月の損失金額</p>
+                <p class="hero-value">¥ {{ "{:,}".format(monthly_loss) }}</p>
+                <p class="hero-sub">{{ month_minutes }} 分の浪費</p>
+            </div>
+        </section>
 
         <section class="summary-grid">
             <div class="card highlight">
@@ -25,17 +34,12 @@
             </div>
 
             <div class="card">
-                <h2>今月の浪費金額</h2>
-                <p class="value">¥ {{ "{:,}".format(monthly_loss) }}</p>
-            </div>
-
-            <div class="card">
                 <h2>今年の浪費時間</h2>
                 <p class="value">{{ year_minutes }} 分</p>
             </div>
 
             <div class="card">
-                <h2>今年の浪費金額</h2>
+                <h2>今年の損失金額</h2>
                 <p class="value">¥ {{ "{:,}".format(yearly_loss) }}</p>
             </div>
         </section>
@@ -62,30 +66,37 @@
 
         <section class="logs-section">
             <div class="logs-card">
-                <h3>記録一覧</h3>
+                <div class="section-head">
+                    <h3>記録一覧</h3>
+                    <span class="log-count">{{ logs|length }} 件</span>
+                </div>
 
                 {% if logs %}
-                    <ul class="log-list">
-                        {% for log in logs %}
-                            <li class="log-item">
-                                <div class="log-info">
-                                    <span class="log-time">{{ log["created_at"] }}</span>
-                                    <span class="log-minutes">{{ log["minutes"] }} 分</span>
-                                </div>
+                    <div class="log-table">
+                        <div class="log-table-head">
+                            <span>日時</span>
+                            <span>時間</span>
+                            <span>操作</span>
+                        </div>
 
-                                <form method="POST">
+                        {% for log in logs %}
+                            <div class="log-row">
+                                <span class="log-time">{{ log["created_at"] }}</span>
+                                <span class="log-minutes">{{ log["minutes"] }} 分</span>
+                                <form method="POST" class="delete-form">
                                     <input type="hidden" name="action" value="delete_log">
                                     <input type="hidden" name="log_id" value="{{ log['id'] }}">
                                     <button type="submit" class="delete-btn">削除</button>
                                 </form>
-                            </li>
+                            </div>
                         {% endfor %}
-                    </ul>
+                    </div>
                 {% else %}
                     <p class="empty-message">まだ記録がありません。</p>
                 {% endif %}
             </div>
         </section>
+
     </div>
 </body>
 </html>

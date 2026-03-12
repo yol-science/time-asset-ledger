@@ -57,7 +57,7 @@ def home():
             cursor.execute("""
             INSERT INTO logs (minutes, created_at)
             VALUES (?, ?)
-            """, (minutes, datetime.now().isoformat()))
+            """, (minutes, datetime.now().strftime("%Y-%m-%d %H:%M")))
 
         elif action == "delete_log":
             log_id = int(request.form["log_id"])
@@ -92,7 +92,10 @@ def home():
     year_minutes = year_result["year_minutes"] if year_result["year_minutes"] else 0
 
     cursor.execute("""
-    SELECT id, minutes, created_at
+    SELECT
+        id,
+        minutes,
+        strftime('%Y-%m-%d %H:%M', created_at) as created_at
     FROM logs
     ORDER BY created_at DESC
     """)
