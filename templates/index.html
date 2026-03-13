@@ -6,6 +6,7 @@
     <title>時間資産簿 - Time is Money</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
     <div class="container">
 
@@ -35,10 +36,20 @@
             </div>
 
             <div class="card">
+                <h2>今週の浪費時間</h2>
+                <p class="value">{{ week_minutes }} 分</p>
+            </div>
+
+            <div class="card">
+                <h2>今週の損失金額</h2>
+                <p class="value">¥ {{ "{:,}".format(weekly_loss) }}</p>
+            </div>
+            
+            <div class="card">
                 <h2>今月の浪費時間</h2>
                 <p class="value">{{ month_minutes }} 分</p>
             </div>
-
+            
             <div class="card">
                 <h2>今年の浪費時間</h2>
                 <p class="value">{{ year_minutes }} 分</p>
@@ -67,6 +78,16 @@
                     <input type="number" name="minutes" min="1" required placeholder="分数を入力">
                     <button type="submit">追加</button>
                 </form>
+            </div>
+        </section>
+
+        <section class="graph-section">
+            <div class="graph-card">
+                <div class="section-head">
+                    <h3>月ごとの損失金額</h3>
+                    <span class="log-count">今年</span>
+                </div>
+                <canvas id="monthlyLossChart"></canvas>
             </div>
         </section>
 
@@ -104,5 +125,53 @@
         </section>
 
     </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('monthlyLossChart');
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: {{ graph_labels | tojson }},
+                datasets: [{
+                    label: '損失金額（円）',
+                    data: {{ graph_data | tojson }},
+                    borderWidth: 1,
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#f4e7bf'
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: {
+                            color: '#d9c78f'
+                        },
+                        grid: {
+                            color: 'rgba(212, 175, 55, 0.08)'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            color: '#d9c78f'
+                        },
+                        grid: {
+                            color: 'rgba(212, 175, 55, 0.08)'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+
 </body>
 </html>

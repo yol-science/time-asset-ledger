@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
 import sqlite3
-from datetime import datetime
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 
@@ -76,6 +76,9 @@ def home():
     current_month = now.strftime("%Y-%m")
     current_year = now.strftime("%Y")
 
+    start_of_week = now.replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=now.weekday())
+    start_of_week_str = start_of_week.strftime("%Y-%m-%d %H:%M")
+
     cursor.execute("""
     SELECT SUM(minutes) AS today_minutes
     FROM logs
@@ -84,6 +87,13 @@ def home():
     today_result = cursor.fetchone()
     today_minutes = today_result["today_minutes"] if today_result["today_minutes"] else 0
 
+    cursor.execute("""
+    SELECT SUM(minutes) AS week_minutes
+    FROM logs
+    WHERE created_at >= ?
+    """, (start_of_week_str,))
+    week_result = cursor.fetchone()
+    week_minutes = week_result["week_minutes"] if week_result["week_minutes"] else 0
 
     cursor.execute("""
     SELECT SUM(minutes) AS month_minutes
@@ -101,6 +111,23 @@ def home():
     year_result = cursor.fetchone()
     year_minutes = year_result["year_minutes"] if year_result["year_minutes"] else 0
 
+    # 月ごとの浪費時間を集計
+    cursor.execute("""
+    SELECT strftime('%m', created_at) AS month, SUM(minutes) AS total_minutes
+    FROM logs
+    WHERE strftime('%Y', created_at) = ?
+    GROUP BY strftime('%m', created_at)
+    ORDER BY strftime('%m', created_at)
+    """, (current_year,))
+    monthly_rows = cursor.fetchall()
+
+    month_map = {f"{i:02}": 0 for i in range(1, 13)}
+    for row in monthly_rows:
+        month_map[row["month"]] = row["total_minutes"] or 0
+
+    graph_labels = [f"{i}月" for i in range(1, 13)]
+    graph_data = [int(hourly_rate * month_map[f"{i:02}"] / 60) for i in range(1, 13)]
+
     cursor.execute("""
     SELECT
         id,
@@ -112,6 +139,7 @@ def home():
     logs = cursor.fetchall()
 
     today_loss = int(hourly_rate * today_minutes / 60)
+    weekly_loss = int(hourly_rate * week_minutes / 60)
     monthly_loss = int(hourly_rate * month_minutes / 60)
     yearly_loss = int(hourly_rate * year_minutes / 60)
 
@@ -120,13 +148,17 @@ def home():
     return render_template(
         "index.html",
         hourly_rate=hourly_rate,
+        today_minutes=today_minutes,
+        week_minutes=week_minutes,
         month_minutes=month_minutes,
         year_minutes=year_minutes,
+        today_loss=today_loss,
+        weekly_loss=weekly_loss,
         monthly_loss=monthly_loss,
         yearly_loss=yearly_loss,
         logs=logs,
-        today_minutes=today_minutes,
-        today_loss=today_loss
+        graph_labels=graph_labels,
+        graph_data=graph_data
     )
 
 
